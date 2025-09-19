@@ -2,39 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Mindful You Design System - Empathetic, Calming, Youth-Focused
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Base colors - soft, calming palette */
+    --background: 250 100% 99%;
+    --foreground: 234 18% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Cards and surfaces */
+    --card: 252 100% 98%;
+    --card-foreground: 234 18% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 252 100% 98%;
+    --popover-foreground: 234 18% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Calming purple for trust and empathy */
+    --primary: 264 83% 70%;
+    --primary-foreground: 252 100% 98%;
+    --primary-light: 264 83% 85%;
+    --primary-dark: 264 83% 55%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Soft teal for balance */
+    --secondary: 185 62% 88%;
+    --secondary-foreground: 185 62% 15%;
+    --secondary-accent: 185 62% 70%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted - Gentle grays */
+    --muted: 248 25% 95%;
+    --muted-foreground: 234 18% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Warm coral for positive actions */
+    --accent: 340 75% 85%;
+    --accent-foreground: 340 75% 25%;
+    --accent-bright: 340 75% 70%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Mood colors */
+    --mood-happy: 54 91% 80%;
+    --mood-calm: 185 62% 80%;
+    --mood-anxious: 340 75% 80%;
+    --mood-sad: 219 43% 75%;
+    --mood-stressed: 25 85% 80%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Crisis and emergency */
+    --emergency: 0 85% 70%;
+    --emergency-foreground: 0 0% 100%;
+    --warning: 38 92% 75%;
+    --warning-foreground: 38 92% 15%;
+
+    /* Interactive elements */
+    --border: 248 25% 88%;
+    --input: 248 25% 95%;
+    --ring: 264 83% 70%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-light)) 100%);
+    --gradient-calm: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--primary-light)) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--mood-happy)) 100%);
+    --gradient-background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+
+    /* Shadows and effects */
+    --shadow-soft: 0 4px 20px -4px hsl(var(--primary) / 0.15);
+    --shadow-gentle: 0 2px 12px -2px hsl(var(--primary) / 0.1);
+    --shadow-conversation: 0 6px 25px -6px hsl(var(--secondary) / 0.25);
+
+    /* Animation timings */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-gentle: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
     --radius: 0.5rem;
 

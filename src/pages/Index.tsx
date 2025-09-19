@@ -1,12 +1,93 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState, useEffect } from "react";
+import OnboardingFlow, { UserProfile } from "@/components/Onboarding";
+import Navigation from "@/components/Navigation";
+import ChatInterface from "@/components/ChatInterface";
+import MoodTracker from "@/components/MoodTracker";
+import ResourcesPage from "@/components/ResourcesPage";
+import SettingsPage from "@/components/SettingsPage";
+import EmergencyModal from "@/components/EmergencyModal";
 
 const Index = () => {
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [currentView, setCurrentView] = useState<string>("chat");
+  const [showEmergencyModal, setShowEmergencyModal] = useState<boolean>(false);
+
+  // Load user profile from localStorage on mount
+  useEffect(() => {
+    const savedProfile = localStorage.getItem('mindful-you-profile');
+    if (savedProfile) {
+      try {
+        setUserProfile(JSON.parse(savedProfile));
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+  }, []);
+
+  // Save user profile to localStorage when it changes
+  const handleProfileUpdate = (profile: UserProfile) => {
+    setUserProfile(profile);
+    localStorage.setItem('mindful-you-profile', JSON.stringify(profile));
+  };
+
+  const handleOnboardingComplete = (profile: UserProfile) => {
+    handleProfileUpdate(profile);
+  };
+
+  const handleEmergencyClick = () => {
+    setShowEmergencyModal(true);
+  };
+
+  // Show onboarding if no profile exists
+  if (!userProfile) {
+    return <OnboardingFlow onComplete={handleOnboardingComplete} />;
+  }
+
+  // Render main application
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-gradient-background">
+      <Navigation
+        currentView={currentView}
+        onViewChange={setCurrentView}
+        userProfile={userProfile}
+        onEmergency={handleEmergencyClick}
+      />
+      
+      {/* Main Content */}
+      <div className="md:ml-64 min-h-screen">
+        <main className="h-screen overflow-hidden">
+          {currentView === "chat" && (
+            <ChatInterface userProfile={userProfile} onEmergency={handleEmergencyClick} />
+          )}
+          
+          {currentView === "mood" && (
+            <div className="h-full overflow-y-auto p-4 md:p-6">
+              <MoodTracker />
+            </div>
+          )}
+          
+          {currentView === "resources" && (
+            <div className="h-full overflow-y-auto p-4 md:p-6">
+              <ResourcesPage />
+            </div>
+          )}
+          
+          {currentView === "settings" && (
+            <div className="h-full overflow-y-auto p-4 md:p-6">
+              <SettingsPage 
+                userProfile={userProfile} 
+                onProfileUpdate={handleProfileUpdate}
+              />
+            </div>
+          )}
+        </main>
       </div>
+
+      {/* Emergency Modal */}
+      <EmergencyModal 
+        isOpen={showEmergencyModal} 
+        onClose={() => setShowEmergencyModal(false)} 
+      />
     </div>
   );
 };

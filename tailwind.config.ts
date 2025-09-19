@@ -22,14 +22,13 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          light: "hsl(var(--primary-light))",
+          dark: "hsl(var(--primary-dark))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          accent: "hsl(var(--secondary-accent))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -38,6 +37,7 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          bright: "hsl(var(--accent-bright))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -46,6 +46,22 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        // Mental wellness specific colors
+        mood: {
+          happy: "hsl(var(--mood-happy))",
+          calm: "hsl(var(--mood-calm))",
+          anxious: "hsl(var(--mood-anxious))",
+          sad: "hsl(var(--mood-sad))",
+          stressed: "hsl(var(--mood-stressed))",
+        },
+        emergency: {
+          DEFAULT: "hsl(var(--emergency))",
+          foreground: "hsl(var(--emergency-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -57,6 +73,21 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+      },
+      backgroundImage: {
+        'gradient-primary': 'var(--gradient-primary)',
+        'gradient-calm': 'var(--gradient-calm)',
+        'gradient-warm': 'var(--gradient-warm)',
+        'gradient-background': 'var(--gradient-background)',
+      },
+      boxShadow: {
+        'soft': 'var(--shadow-soft)',
+        'gentle': 'var(--shadow-gentle)',
+        'conversation': 'var(--shadow-conversation)',
+      },
+      transitionTimingFunction: {
+        'smooth': 'var(--transition-smooth)',
+        'gentle': 'var(--transition-gentle)',
       },
       borderRadius: {
         lg: "var(--radius)",
