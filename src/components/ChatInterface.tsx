@@ -47,33 +47,133 @@ const ChatInterface = ({ userProfile, onEmergency }: ChatInterfaceProps) => {
 
   const getWelcomeMessage = (profile: UserProfile) => {
     const pronoun = profile.pronouns ? ` (${profile.pronouns})` : "";
-    const ageAdjusted = profile.ageGroup === "13-15" 
-      ? "Hi there! 👋 I'm here to chat and support you." 
-      : profile.ageGroup === "16-18"
-      ? "Hey! I'm here to listen and help you navigate whatever you're going through."
-      : "Hello! I'm your wellness companion, here to support you through anything on your mind.";
+    let ageAdjusted = "";
     
-    return `${ageAdjusted} This is your safe space${pronoun}. How are you feeling today?`;
+    if (profile.ageGroup === "13-15") {
+      ageAdjusted = "Hi there! 👋 I'm here to chat and support you. This is your safe space to share anything that's on your mind.";
+    } else if (profile.ageGroup === "16-18") {
+      ageAdjusted = "Hey! I'm here to listen and help you navigate whatever you're going through. High school can be a lot, and you don't have to face it alone.";
+    } else {
+      ageAdjusted = "Hello! I'm your wellness companion, here to support you through anything on your mind. Transitions and life changes can be tough, but you've got this.";
+    }
+    
+    // Add personalized elements based on profile
+    let personalizations = [];
+    if (profile.tonePreference === 'gentle') {
+      personalizations.push("I'll keep our conversation gentle and supportive.");
+    } else if (profile.tonePreference === 'direct') {
+      personalizations.push("I'll be direct and straightforward with you.");
+    } else if (profile.tonePreference === 'coaching') {
+      personalizations.push("I'm here to help coach you through challenges.");
+    }
+    
+    if (profile.interactionMode === 'voice' || profile.interactionMode === 'both') {
+      personalizations.push("Feel free to use voice messages if that's easier for you.");
+    }
+
+    const personalizationText = personalizations.length > 0 ? ` ${personalizations.join(' ')}` : "";
+    
+    return `${ageAdjusted}${personalizationText} How are you feeling today?${pronoun}`;
   };
 
   const generateResponse = (userMessage: string): string => {
-    // Simple placeholder responses - in production this would connect to Vertex AI
-    const responses = [
-      "That sounds really challenging. Thank you for sharing that with me. Would you like to talk more about what's making you feel this way?",
-      "I hear you, and I want you to know that your feelings are completely valid. It takes courage to reach out.",
-      "That must feel overwhelming. Let's take this one step at a time. What feels most pressing right now?",
-      "I'm glad you felt comfortable sharing that. Sometimes just talking about things can help us process them better.",
-      "It sounds like you're dealing with a lot. Remember, it's okay to feel however you're feeling right now.",
+    const lowerMessage = userMessage.toLowerCase();
+    
+    // Enhanced crisis detection with more patterns
+    const crisisPatterns = [
+      'hurt myself', 'suicide', 'suicidal', 'end it all', 'kill myself', 
+      'don\'t want to live', 'better off dead', 'no point', 'give up',
+      'self harm', 'cutting', 'overdose', 'end my life'
     ];
     
-    // Simple crisis detection (placeholder)
-    if (userMessage.toLowerCase().includes('hurt myself') || 
-        userMessage.toLowerCase().includes('suicide') ||
-        userMessage.toLowerCase().includes('end it all')) {
-      return "I'm really concerned about you and I want to help. You mentioned some thoughts that worry me. Are you safe right now? If you're in immediate danger, please call emergency services or a crisis hotline. Would you like me to help you find support resources?";
-    }
+    const isCrisis = crisisPatterns.some(pattern => lowerMessage.includes(pattern));
     
-    return responses[Math.floor(Math.random() * responses.length)];
+    if (isCrisis) {
+      return "I'm really concerned about you and I want to help. You mentioned some thoughts that worry me deeply. Are you safe right now? If you're in immediate danger, please call emergency services (911) or text HOME to 741741 for the Crisis Text Line. You don't have to go through this alone - there are people who want to help you. Would you like me to help you find local support resources?";
+    }
+
+    // Anxiety/stress responses
+    if (lowerMessage.includes('anxious') || lowerMessage.includes('anxiety') || lowerMessage.includes('worried')) {
+      const anxietyResponses = [
+        "Anxiety can feel really overwhelming. Thank you for sharing that with me. Let's try a quick grounding technique: Can you name 5 things you can see around you right now?",
+        "I hear that you're feeling anxious. That takes courage to share. Sometimes when anxiety hits, our breathing gets shallow. Would you like to try a simple breathing exercise with me?",
+        "Anxiety is tough, but you're tougher for reaching out. What's one small thing that usually helps you feel a bit calmer? Even tiny steps count."
+      ];
+      return anxietyResponses[Math.floor(Math.random() * anxietyResponses.length)];
+    }
+
+    // Stress responses  
+    if (lowerMessage.includes('stressed') || lowerMessage.includes('stress') || lowerMessage.includes('overwhelming')) {
+      const stressResponses = [
+        "That sounds really overwhelming. Thank you for trusting me with this. When everything feels like too much, sometimes it helps to focus on just the next small step. What's one thing you could do in the next 10 minutes that might help?",
+        "Stress can make everything feel impossible. You're not alone in feeling this way. Would it help to talk through what's weighing on you most right now?",
+        "I can hear how much pressure you're under. That's really hard. Sometimes stress is our mind's way of caring about things that matter to us. What matters most to you in this situation?"
+      ];
+      return stressResponses[Math.floor(Math.random() * stressResponses.length)];
+    }
+
+    // Depression/sadness responses
+    if (lowerMessage.includes('sad') || lowerMessage.includes('depressed') || lowerMessage.includes('down') || lowerMessage.includes('hopeless')) {
+      const sadnessResponses = [
+        "I can hear the pain in your words, and I'm really glad you shared this with me. Sadness is heavy, but you don't have to carry it alone. What's been the hardest part of your day?",
+        "Thank you for being brave enough to share how you're feeling. Sometimes when we're down, small acts of kindness toward ourselves can help. Have you been able to do anything gentle for yourself today?",
+        "That sounds incredibly difficult. Your feelings are completely valid - it's okay to not be okay. What's one thing that has brought you even a tiny moment of comfort recently?"
+      ];
+      return sadnessResponses[Math.floor(Math.random() * sadnessResponses.length)];
+    }
+
+    // Loneliness responses
+    if (lowerMessage.includes('lonely') || lowerMessage.includes('alone') || lowerMessage.includes('isolated')) {
+      const lonelinessResponses = [
+        "Loneliness can feel so heavy. I'm here with you right now, and I want you to know that you matter. What's making you feel most disconnected lately?",
+        "Feeling alone is one of the hardest human experiences. Thank you for reaching out - that takes real strength. You're not as alone as it might feel right now.",
+        "I hear how isolated you're feeling. That's really painful. Sometimes connection can start small - even this conversation is a form of connection. Is there anyone in your life you might feel comfortable reaching out to?"
+      ];
+      return lonelinessResponses[Math.floor(Math.random() * lonelinessResponses.length)];
+    }
+
+    // School/academic stress (age-appropriate)
+    if (lowerMessage.includes('school') || lowerMessage.includes('college') || lowerMessage.includes('grades') || lowerMessage.includes('exam')) {
+      let schoolResponses = [];
+      if (userProfile.ageGroup === '13-15') {
+        schoolResponses = [
+          "School can feel like so much pressure sometimes. What's the hardest part about school for you right now?",
+          "I hear you. School stress is real, and it can feel overwhelming. Have you been able to talk to anyone at school or at home about what you're going through?",
+        ];
+      } else if (userProfile.ageGroup === '16-18') {
+        schoolResponses = [
+          "High school pressure is intense, especially with college and future decisions looming. What's weighing on you most about school right now?",
+          "That sounds like a lot to handle. Between academics, social life, and thinking about the future, it's no wonder you're feeling overwhelmed. What feels most urgent?",
+        ];
+      } else {
+        schoolResponses = [
+          "College and post-graduation life transitions are huge. It's completely normal to feel uncertain about the future. What aspect of your academic life is causing you the most stress?",
+          "Academic pressure at your stage is intense. You're juggling so much - studies, maybe work, thinking about career paths. What support do you have right now?",
+        ];
+      }
+      return schoolResponses[Math.floor(Math.random() * schoolResponses.length)];
+    }
+
+    // Positive/good day responses
+    if (lowerMessage.includes('good') || lowerMessage.includes('better') || lowerMessage.includes('happy') || lowerMessage.includes('great')) {
+      const positiveResponses = [
+        "That's wonderful to hear! I'm so glad you're having a good day. What's been the best part of your day so far?",
+        "It makes me happy to hear you're doing well! Good days are worth celebrating. What's contributing to your positive mood?",
+        "That's fantastic! It's beautiful when we can recognize and appreciate the good moments. What's making today feel good for you?"
+      ];
+      return positiveResponses[Math.floor(Math.random() * positiveResponses.length)];
+    }
+
+    // General supportive responses
+    const generalResponses = [
+      "Thank you for sharing that with me. It sounds like you have a lot on your mind. What feels most important to talk about right now?",
+      "I hear you, and I want you to know that your feelings are completely valid. Sometimes just putting words to our experiences can help us process them better.",
+      "That sounds really challenging. Thank you for trusting me with this. You don't have to face this alone - I'm here to listen and support you.",
+      "I can tell you're going through something difficult. It takes courage to reach out and talk about hard things. What would feel most helpful right now?",
+      "Your feelings make complete sense given what you're experiencing. What's been the most difficult part of your day today?",
+    ];
+    
+    return generalResponses[Math.floor(Math.random() * generalResponses.length)];
   };
 
   const handleSendMessage = () => {
@@ -104,10 +204,14 @@ const ChatInterface = ({ userProfile, onEmergency }: ChatInterfaceProps) => {
 
   const handleQuickAction = (action: string) => {
     const quickMessages = {
-      "feeling-anxious": "I'm feeling anxious today and could use some support.",
-      "good-day": "I'm having a good day and wanted to check in!",
-      "stressed": "I'm feeling really stressed about some things in my life.",
-      "breathing": "Can you guide me through a breathing exercise?",
+      "feeling-anxious": "I'm feeling anxious today and could use some support and grounding techniques.",
+      "good-day": "I'm having a good day and wanted to check in! Things are going well for me.",
+      "stressed": "I'm feeling really stressed about some things in my life and need to talk through them.",
+      "breathing": "Can you guide me through a breathing exercise? I need to calm down and center myself.",
+      "lonely": "I'm feeling pretty lonely and isolated today. Could use some connection.",
+      "school-stress": "School is overwhelming me right now and I'm struggling to keep up.",
+      "sleep-help": "I'm having trouble sleeping and it's affecting my mood and energy.",
+      "body-image": "I'm struggling with how I feel about my body and appearance.",
     };
     
     setInputValue(quickMessages[action as keyof typeof quickMessages] || action);
@@ -202,6 +306,26 @@ const ChatInterface = ({ userProfile, onEmergency }: ChatInterfaceProps) => {
             >
               🫁 Need breathing help
             </Button>
+            {userProfile.ageGroup !== '13-15' && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleQuickAction("lonely")}
+                  className="text-xs justify-start"
+                >
+                  😔 Feeling lonely
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleQuickAction("school-stress")}
+                  className="text-xs justify-start"
+                >
+                  📚 School stress
+                </Button>
+              </>
+            )}
           </div>
         </div>
       )}

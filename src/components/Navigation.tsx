@@ -9,7 +9,10 @@ import {
   Menu,
   X,
   Shield,
-  Bell
+  Bell,
+  Users,
+  TrendingUp,
+  Compass
 } from "lucide-react";
 import { UserProfile } from "./Onboarding";
 
@@ -26,7 +29,10 @@ const Navigation = ({ currentView, onViewChange, userProfile, onEmergency }: Nav
   const navItems = [
     { id: "chat", label: "Chat", icon: MessageCircle },
     { id: "mood", label: "Mood", icon: Heart },
-    { id: "resources", label: "Resources", icon: BookOpen },
+    { id: "journal", label: "Journal", icon: BookOpen },
+    { id: "community", label: "Community", icon: Users },
+    { id: "progress", label: "Progress", icon: TrendingUp },
+    { id: "resources", label: "Resources", icon: Compass },
     { id: "settings", label: "Settings", icon: Settings },
   ];
 

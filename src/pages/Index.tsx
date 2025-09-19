@@ -5,6 +5,9 @@ import ChatInterface from "@/components/ChatInterface";
 import MoodTracker from "@/components/MoodTracker";
 import ResourcesPage from "@/components/ResourcesPage";
 import SettingsPage from "@/components/SettingsPage";
+import JournalPage from "@/components/JournalPage";
+import CommunityPage from "@/components/CommunityPage";
+import GamificationPanel from "@/components/GamificationPanel";
 import EmergencyModal from "@/components/EmergencyModal";
 
 const Index = () => {
@@ -72,12 +75,21 @@ const Index = () => {
             </div>
           )}
           
-          {currentView === "settings" && (
+          {currentView === "journal" && (
             <div className="h-full overflow-y-auto p-4 md:p-6">
-              <SettingsPage 
-                userProfile={userProfile} 
-                onProfileUpdate={handleProfileUpdate}
-              />
+              <JournalPage userProfile={userProfile} />
+            </div>
+          )}
+          
+          {currentView === "community" && (
+            <div className="h-full overflow-y-auto p-4 md:p-6">
+              <CommunityPage userProfile={userProfile} />
+            </div>
+          )}
+          
+          {currentView === "progress" && (
+            <div className="h-full overflow-y-auto p-4 md:p-6">
+              <GamificationPanel userProfile={userProfile} />
             </div>
           )}
         </main>

@@ -17,6 +17,18 @@ export interface UserProfile {
   interests: string[];
   privacyLevel: string;
   notifications: boolean;
+  // Enhanced personalization fields
+  genderIdentity?: string;
+  sexualOrientation?: string;
+  neurodivergent?: string[];
+  culturalBackground?: string;
+  languagePreference?: string;
+  tonePreference: 'gentle' | 'direct' | 'coaching';
+  interactionMode: 'text' | 'voice' | 'both';
+  accessibilityNeeds?: string[];
+  emergencyContactPermission: 'none' | 'local_clinician' | 'parent';
+  supportGroups?: string[];
+  copingStrategies?: string[];
 }
 
 const OnboardingFlow = ({ onComplete }: OnboardingProps) => {
@@ -27,6 +39,9 @@ const OnboardingFlow = ({ onComplete }: OnboardingProps) => {
     interests: [],
     privacyLevel: "high",
     notifications: false,
+    tonePreference: 'gentle',
+    interactionMode: 'text',
+    emergencyContactPermission: 'none',
   });
 
   const steps = [
