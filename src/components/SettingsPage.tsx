@@ -1,342 +1,424 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { 
-  User, 
-  Shield, 
-  Bell, 
-  Download, 
-  Trash2, 
-  Eye, 
-  EyeOff,
+import { toast } from "@/components/ui/use-toast";
+import {
+  Bell,
   Heart,
-  Palette,
-  Volume2
+  Shield,
+  Settings,
+  Languages,
+  Accessibility,
+  Users,
+  Headphones,
+  LifeBuoy,
+  LogOut,
+  FileText,
+  Download,
+  Trash2,
 } from "lucide-react";
-import { UserProfile } from "./Onboarding";
 
-interface SettingsPageProps {
-  userProfile: UserProfile;
-  onProfileUpdate: (profile: UserProfile) => void;
-}
+const SettingsPage = () => {
+  const [profile, setProfile] = useState({
+    ageGroup: "16-18",
+    pronouns: "",
+    genderIdentity: "",
+    sexualOrientation: "",
+    languagePreference: "English",
+    interests: [] as string[],
+    accessibilityNeeds: [] as string[],
+    tonePreference: "gentle",
+    interactionMode: "text",
+    copingStrategies: [] as string[],
+    supportGroups: [] as string[],
+    emergencyContactPermission: "none",
+    privacyLevel: "high",
+    notifications: true,
+    crisisAlerts: true,
+  });
 
-const SettingsPage = ({ userProfile, onProfileUpdate }: SettingsPageProps) => {
-  const [profile, setProfile] = useState<UserProfile>(userProfile);
-  const [showPrivacyDetails, setShowPrivacyDetails] = useState(false);
+  const handleCheckboxToggle = (key: keyof typeof profile, value: string) => {
+      // Ensure the property is of type string[]
+      if (Array.isArray(profile[key])) {
+        setProfile((prev) => ({
+          ...prev,
+          [key]: (prev[key] as string[]).includes(value)
+            ? (prev[key] as string[]).filter((i) => i !== value)
+            : [...(prev[key] as string[]), value],
+        }));
+      }
+    };
 
   const handleSave = () => {
-    onProfileUpdate(profile);
-    // Show success toast
-    console.log("Settings saved!");
+    toast({
+      title: "Settings Updated",
+      description: "Your preferences have been saved successfully.",
+    });
+    console.log("Profile Settings:", profile);
   };
 
   const handleDataExport = () => {
-    // In production, this would generate and download user data
     const exportData = {
-      profile: profile,
-      moodHistory: JSON.parse(localStorage.getItem('mindful-you-moods') || '[]'),
+      profile,
+      moodHistory: JSON.parse(localStorage.getItem("mindful-you-moods") || "[]"),
       exportDate: new Date().toISOString(),
     };
-    
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = 'mindful-you-data.json';
+    a.download = "mindful-you-data.json";
     a.click();
   };
 
   const handleDataDeletion = () => {
-    if (confirm("Are you sure you want to delete all your data? This cannot be undone.")) {
+    if (confirm("Are you sure you want to permanently delete all your data?")) {
       localStorage.clear();
-      // In production, this would also clear server-side data
-      console.log("Data deletion requested");
+      toast({
+        title: "Data Deleted",
+        description: "All your personal data has been removed.",
+      });
     }
   };
 
-  const handleInterestToggle = (interest: string) => {
-    setProfile(prev => ({
-      ...prev,
-      interests: prev.interests.includes(interest)
-        ? prev.interests.filter(i => i !== interest)
-        : [...prev.interests, interest]
-    }));
-  };
-
-  const availableInterests = [
-    "Art & Creativity", "Music", "Sports", "Reading", "Gaming", "Nature", 
-    "Technology", "Cooking", "Photography", "Writing", "Dance", "Movies"
-  ];
-
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-semibold text-primary">Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your profile, privacy, and preferences
-        </p>
-      </div>
+    <div className="p-6 space-y-6 max-w-3xl mx-auto">
+      <h1 className="text-3xl font-semibold text-primary">Settings</h1>
+      <p className="text-muted-foreground -mt-2">
+        Manage your profile, privacy, preferences, and support options
+      </p>
 
-      {/* Profile Settings */}
-      <Card className="shadow-gentle border-secondary/20">
-        <CardHeader>
-          <CardTitle className="flex items-center text-primary">
-            <User className="w-5 h-5 mr-2" />
-            Profile Information
-          </CardTitle>
-          <CardDescription>
-            Personalize your experience and help us provide better support
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="age-group" className="text-sm font-medium">Age Group</Label>
-            <RadioGroup 
-              value={profile.ageGroup} 
-              onValueChange={(value) => setProfile(prev => ({ ...prev, ageGroup: value }))}
-              className="mt-2"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="13-15" id="age-13-15" />
-                <Label htmlFor="age-13-15" className="text-sm">13-15 years</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="16-18" id="age-16-18" />
-                <Label htmlFor="age-16-18" className="text-sm">16-18 years</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="19-24" id="age-19-24" />
-                <Label htmlFor="age-19-24" className="text-sm">19-24 years</Label>
-              </div>
-            </RadioGroup>
-          </div>
+      <Tabs defaultValue="profile">
+        <TabsList className="grid grid-cols-4 mb-6">
+          <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="privacy">Privacy</TabsTrigger>
+          <TabsTrigger value="preferences">Preferences</TabsTrigger>
+          <TabsTrigger value="support">Support</TabsTrigger>
+        </TabsList>
 
-          <div>
-            <Label htmlFor="pronouns" className="text-sm font-medium">Pronouns</Label>
-            <Input
-              id="pronouns"
-              placeholder="e.g., they/them, she/her, he/him"
-              value={profile.pronouns}
-              onChange={(e) => setProfile(prev => ({ ...prev, pronouns: e.target.value }))}
-              className="mt-2"
-            />
-          </div>
+        {/* Profile Tab */}
+        <TabsContent value="profile">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Heart className="w-5 h-5 text-primary" /> Profile Information
+              </CardTitle>
+              <CardDescription>
+                Customize your personal details and accessibility needs
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Age Group</Label>
+                <Select
+                  value={profile.ageGroup}
+                  onValueChange={(value) => setProfile((p) => ({ ...p, ageGroup: value }))}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10-13">10–13 (Early Adolescents)</SelectItem>
+                    <SelectItem value="14-17">14–17 (Mid Teens)</SelectItem>
+                    <SelectItem value="18-24">18–24 (Young Adults)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-          <div>
-            <Label className="text-sm font-medium">Interests</Label>
-            <div className="mt-2 grid grid-cols-2 gap-2">
-              {availableInterests.map((interest) => (
-                <div key={interest} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id={interest}
-                    checked={profile.interests.includes(interest)}
-                    onChange={() => handleInterestToggle(interest)}
-                    className="w-4 h-4 rounded border-border"
-                  />
-                  <Label htmlFor={interest} className="text-xs">{interest}</Label>
+              <div>
+                <Label>Pronouns</Label>
+                <Input
+                  placeholder="e.g., they/them"
+                  value={profile.pronouns}
+                  onChange={(e) => setProfile((p) => ({ ...p, pronouns: e.target.value }))}
+                />
+              </div>
+
+              <div>
+                <Label>Gender Identity</Label>
+                <Select
+                  value={profile.genderIdentity}
+                  onValueChange={(value) => setProfile((p) => ({ ...p, genderIdentity: value }))}
+                >
+                  <SelectTrigger><SelectValue placeholder="Select identity" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cis_male">Cisgender Male</SelectItem>
+                    <SelectItem value="cis_female">Cisgender Female</SelectItem>
+                    <SelectItem value="transgender">Transgender</SelectItem>
+                    <SelectItem value="non_binary">Non-Binary</SelectItem>
+                    <SelectItem value="fluid">Gender Fluid</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label>Sexual Orientation</Label>
+                <Select
+                  value={profile.sexualOrientation}
+                  onValueChange={(value) => setProfile((p) => ({ ...p, sexualOrientation: value }))}
+                >
+                  <SelectTrigger><SelectValue placeholder="Select orientation" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="heterosexual">Heterosexual</SelectItem>
+                    <SelectItem value="gay">Gay</SelectItem>
+                    <SelectItem value="lesbian">Lesbian</SelectItem>
+                    <SelectItem value="bisexual">Bisexual</SelectItem>
+                    <SelectItem value="queer">Queer</SelectItem>
+                    <SelectItem value="asexual">Asexual</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label>Language Preference</Label>
+                <Input
+                  placeholder="Preferred language"
+                  value={profile.languagePreference}
+                  onChange={(e) => setProfile((p) => ({ ...p, languagePreference: e.target.value }))}
+                />
+              </div>
+
+              <div>
+                <Label>Accessibility Needs</Label>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {["Screen Reader", "High Contrast", "Reduced Motion"].map((need) => (
+                    <div key={need} className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={profile.accessibilityNeeds.includes(need)}
+                        onCheckedChange={() => handleCheckboxToggle("accessibilityNeeds", need)}
+                      />
+                      <span className="text-sm">{need}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Privacy Settings */}
-      <Card className="shadow-gentle border-secondary/20">
-        <CardHeader>
-          <CardTitle className="flex items-center text-primary">
-            <Shield className="w-5 h-5 mr-2" />
-            Privacy & Data
-          </CardTitle>
-          <CardDescription>
-            Control how your data is stored and used
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="privacy-level" className="text-sm font-medium">Privacy Level</Label>
-            <RadioGroup 
-              value={profile.privacyLevel} 
-              onValueChange={(value) => setProfile(prev => ({ ...prev, privacyLevel: value }))}
-              className="flex space-x-4"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="high" id="privacy-high" />
-                <Label htmlFor="privacy-high" className="text-sm">High</Label>
               </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="medium" id="privacy-medium" />
-                <Label htmlFor="privacy-medium" className="text-sm">Medium</Label>
-              </div>
-            </RadioGroup>
-          </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-          <div className="p-4 bg-secondary/20 rounded-lg">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowPrivacyDetails(!showPrivacyDetails)}
-              className="p-0 h-auto font-medium text-foreground mb-2"
-            >
-              {showPrivacyDetails ? <EyeOff className="w-4 h-4 mr-1" /> : <Eye className="w-4 h-4 mr-1" />}
-              Privacy Details
-            </Button>
-            {showPrivacyDetails && (
+        {/* Privacy Tab */}
+        <TabsContent value="privacy">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-primary" /> Privacy & Safety
+              </CardTitle>
+              <CardDescription>
+                Manage your privacy level, data export, and crisis alerts
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Privacy Level</Label>
+                <Select
+                  value={profile.privacyLevel}
+                  onValueChange={(value) => setProfile((p) => ({ ...p, privacyLevel: value }))}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="high">High (most private)</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="low">Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label>Emergency Contact Permission</Label>
+                <Select
+                  value={profile.emergencyContactPermission}
+                  onValueChange={(value) => setProfile((p) => ({ ...p, emergencyContactPermission: value }))}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    <SelectItem value="local_clinician">Local Clinician</SelectItem>
+                    <SelectItem value="parent">Parent / Guardian</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label>Crisis Alerts</Label>
+                <Switch
+                  checked={profile.crisisAlerts}
+                  onCheckedChange={(checked) => setProfile((p) => ({ ...p, crisisAlerts: checked }))}
+                />
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3">
+                <h4 className="font-medium text-foreground">Data Management</h4>
+                <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                  <div>
+                    <div className="text-sm font-medium">Export Your Data</div>
+                    <div className="text-xs text-muted-foreground">Download all your personal data</div>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={handleDataExport}>
+                    <Download className="w-4 h-4 mr-1" /> Export
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-emergency/5 rounded-lg border border-emergency/20">
+                  <div>
+                    <div className="text-sm font-medium text-emergency">Delete All Data</div>
+                    <div className="text-xs text-muted-foreground">Permanently delete your account and data</div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDataDeletion}
+                    className="border-emergency/30 text-emergency hover:bg-emergency/10"
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" /> Delete
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Preferences Tab */}
+        <TabsContent value="preferences">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="w-5 h-5 text-primary" /> App & Wellness Preferences
+              </CardTitle>
+              <CardDescription>
+                Adjust app behavior, tone, and wellness tools
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Tone Preference</Label>
+                <Select
+                  value={profile.tonePreference}
+                  onValueChange={(value) => setProfile((p) => ({ ...p, tonePreference: value }))}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="gentle">Gentle</SelectItem>
+                    <SelectItem value="direct">Direct</SelectItem>
+                    <SelectItem value="coaching">Coaching</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label>Interaction Mode</Label>
+                <Select
+                  value={profile.interactionMode}
+                  onValueChange={(value) => setProfile((p) => ({ ...p, interactionMode: value }))}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="text">Text</SelectItem>
+                    <SelectItem value="voice">Voice</SelectItem>
+                    <SelectItem value="both">Text & Voice</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label>Coping Strategies</Label>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {["Journaling", "Meditation", "Music", "Exercise"].map((strategy) => (
+                    <div key={strategy} className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={profile.copingStrategies.includes(strategy)}
+                        onCheckedChange={() => handleCheckboxToggle("copingStrategies", strategy)}
+                      />
+                      <span className="text-sm">{strategy}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Label>Support Groups</Label>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {["Peer Support", "Online Communities", "Local Groups"].map((group) => (
+                    <div key={group} className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={profile.supportGroups.includes(group)}
+                        onCheckedChange={() => handleCheckboxToggle("supportGroups", group)}
+                      />
+                      <span className="text-sm">{group}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-sm font-medium">Daily Notifications</Label>
+                  <div className="text-xs text-muted-foreground">Reminders and wellness tips</div>
+                </div>
+                <Switch
+                  checked={profile.notifications}
+                  onCheckedChange={(checked) => setProfile((p) => ({ ...p, notifications: checked }))}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Support Tab */}
+        <TabsContent value="support">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <LifeBuoy className="w-5 h-5 text-primary" /> Support & About
+              </CardTitle>
+              <CardDescription>
+                Learn more about Mindful You and get help
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button variant="outline" className="w-full flex items-center justify-start gap-2">
+                <Users className="w-4 h-4" /> Join Community
+              </Button>
+              <Button variant="outline" className="w-full flex items-center justify-start gap-2">
+                <Headphones className="w-4 h-4" /> Crisis Hotlines
+              </Button>
+              <Button variant="outline" className="w-full flex items-center justify-start gap-2">
+                <FileText className="w-4 h-4" /> Terms & Privacy Policy
+              </Button>
+              <Button variant="outline" className="w-full flex items-center justify-start gap-2">
+                <LogOut className="w-4 h-4" /> Logout
+              </Button>
+
+              <Separator />
+
               <div className="text-sm text-muted-foreground space-y-2">
-                <p><strong>High Privacy:</strong> Conversations deleted after 24 hours, minimal analytics, no personalization data stored.</p>
-                <p><strong>Medium Privacy:</strong> Conversations stored for mood analysis, anonymized usage analytics, personalization preferences saved.</p>
+                <p><strong>Mindful You v1.0</strong></p>
+                <p>An AI-powered wellness companion designed with empathy, accessibility, and privacy at its core.</p>
+                <p>This app is <strong>not</strong> a replacement for professional mental health care. If you're experiencing a crisis, please contact local emergency services or a crisis hotline.</p>
               </div>
-            )}
-          </div>
 
-          <Separator />
-
-          <div className="space-y-3">
-            <h4 className="font-medium text-foreground">Data Management</h4>
-            
-            <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-              <div>
-                <div className="text-sm font-medium">Export Your Data</div>
-                <div className="text-xs text-muted-foreground">Download all your personal data</div>
+              <div className="flex flex-wrap gap-2 pt-2">
+                <Badge variant="outline">Privacy-First</Badge>
+                <Badge variant="outline">Youth-Focused</Badge>
+                <Badge variant="outline">Crisis Support</Badge>
+                <Badge variant="outline">Accessible</Badge>
               </div>
-              <Button variant="outline" size="sm" onClick={handleDataExport}>
-                <Download className="w-4 h-4 mr-1" />
-                Export
-              </Button>
-            </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
-            <div className="flex items-center justify-between p-3 bg-emergency/5 rounded-lg border border-emergency/20">
-              <div>
-                <div className="text-sm font-medium text-emergency">Delete All Data</div>
-                <div className="text-xs text-muted-foreground">Permanently delete your account and data</div>
-              </div>
-              <Button variant="outline" size="sm" onClick={handleDataDeletion} className="border-emergency/30 text-emergency hover:bg-emergency/10">
-                <Trash2 className="w-4 h-4 mr-1" />
-                Delete
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Notification Settings */}
-      <Card className="shadow-gentle border-secondary/20">
-        <CardHeader>
-          <CardTitle className="flex items-center text-primary">
-            <Bell className="w-5 h-5 mr-2" />
-            Notifications & Reminders
-          </CardTitle>
-          <CardDescription>
-            Manage how and when we send you supportive messages
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label className="text-sm font-medium">Daily Check-in Reminders</Label>
-              <div className="text-xs text-muted-foreground">Gentle reminders to track your mood</div>
-            </div>
-            <Switch
-              checked={profile.notifications}
-              onCheckedChange={(checked) => setProfile(prev => ({ ...prev, notifications: checked }))}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <Label className="text-sm font-medium">Wellness Tips</Label>
-              <div className="text-xs text-muted-foreground">Periodic mental health tips and resources</div>
-            </div>
-            <Switch defaultChecked={true} />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <Label className="text-sm font-medium">Crisis Support Alerts</Label>
-              <div className="text-xs text-muted-foreground">Important safety and support information</div>
-            </div>
-            <Switch defaultChecked={true} disabled />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* App Preferences */}
-      <Card className="shadow-gentle border-secondary/20">
-        <CardHeader>
-          <CardTitle className="flex items-center text-primary">
-            <Palette className="w-5 h-5 mr-2" />
-            App Preferences
-          </CardTitle>
-          <CardDescription>
-            Customize your app experience
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label className="text-sm font-medium">Sound Effects</Label>
-              <div className="text-xs text-muted-foreground">Gentle sounds for notifications and interactions</div>
-            </div>
-            <Switch defaultChecked={true} />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <Label className="text-sm font-medium">Reduced Motion</Label>
-              <div className="text-xs text-muted-foreground">Minimize animations for better accessibility</div>
-            </div>
-            <Switch />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <Label className="text-sm font-medium">Voice Interaction</Label>
-              <div className="text-xs text-muted-foreground">Enable voice input and responses</div>
-            </div>
-            <Switch defaultChecked={true} />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Support Information */}
-      <Card className="shadow-gentle border-secondary/20">
-        <CardHeader>
-          <CardTitle className="flex items-center text-primary">
-            <Heart className="w-5 h-5 mr-2" />
-            Support & About
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="text-sm text-muted-foreground space-y-2">
-            <p><strong>Mindful You v1.0</strong></p>
-            <p>An AI-powered mental wellness companion designed with privacy and empathy at its core.</p>
-            <p>This app is not a replacement for professional mental health care. If you're experiencing a mental health crisis, please contact emergency services or a crisis hotline.</p>
-          </div>
-          
-          <div className="flex flex-wrap gap-2 pt-2">
-            <Badge variant="outline">Privacy-First</Badge>
-            <Badge variant="outline">Youth-Focused</Badge>
-            <Badge variant="outline">Crisis Support</Badge>
-            <Badge variant="outline">24/7 Available</Badge>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Save Button */}
-      <div className="flex justify-center pt-4">
-        <Button 
-          onClick={handleSave}
-          className="px-8 bg-gradient-primary border-0 hover:opacity-90"
-        >
-          Save Settings
+            <div className="flex justify-end">
+        <Button onClick={handleSave} className="px-6">
+          Save Changes
         </Button>
       </div>
     </div>

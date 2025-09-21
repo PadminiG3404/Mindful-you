@@ -9,7 +9,6 @@ import {
   Menu,
   X,
   Shield,
-  Bell,
   Users,
   TrendingUp,
   Compass
@@ -38,6 +37,10 @@ const Navigation = ({ currentView, onViewChange, userProfile, onEmergency }: Nav
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
+  const displayName = userProfile.name ? `Hi ${userProfile.name}` : "Hi there!";
+  const age = userProfile.ageGroup ? `Age: ${userProfile.ageGroup}` : "";
+  const pronouns = userProfile.pronouns ? `(${userProfile.pronouns})` : "";
+
   return (
     <>
       {/* Mobile Header */}
@@ -46,12 +49,12 @@ const Navigation = ({ currentView, onViewChange, userProfile, onEmergency }: Nav
           <div className="flex items-center space-x-3">
             <Avatar className="w-8 h-8">
               <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                {userProfile.pronouns?.charAt(0)?.toUpperCase() || 'U'}
+                {displayName.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div>
-              <div className="font-medium text-foreground text-sm">Mindful You</div>
-              <div className="text-xs text-muted-foreground">Your safe space</div>
+              <div className="font-medium text-foreground text-sm">{displayName}</div>
+              <div className="text-xs text-muted-foreground">{age}</div>
             </div>
           </div>
           
@@ -64,29 +67,23 @@ const Navigation = ({ currentView, onViewChange, userProfile, onEmergency }: Nav
             >
               <Shield className="w-4 h-4" />
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleMenu}
-            >
+            <Button variant="ghost" size="sm" onClick={toggleMenu}>
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden fixed inset-0 z-50 bg-background/95 backdrop-blur-sm">
           <div className="p-4 space-y-2">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-lg font-medium text-foreground">Navigation</h2>
-              <Button variant="ghost" size="sm" onClick={toggleMenu}>
-                <X className="w-5 h-5" />
-              </Button>
+              <Button variant="ghost" size="sm" onClick={toggleMenu}><X className="w-5 h-5" /></Button>
             </div>
             
-            {navItems.map((item) => {
+            {navItems.map(item => {
               const Icon = item.icon;
               return (
                 <Button
@@ -137,28 +134,29 @@ const Navigation = ({ currentView, onViewChange, userProfile, onEmergency }: Nav
             </div>
           </div>
 
-          {/* User Profile Section */}
+          {/* User Profile */}
           <div className="p-4 border-b border-border/50">
             <div className="flex items-center space-x-3">
               <Avatar className="w-10 h-10">
                 <AvatarFallback className="bg-secondary/30 text-secondary-foreground">
-                  {userProfile.pronouns?.charAt(0)?.toUpperCase() || 'U'}
+                  {displayName.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium text-foreground truncate">
-                  {userProfile.pronouns ? `Welcome (${userProfile.pronouns})` : 'Welcome'}
+                  {displayName} {pronouns}
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  Age: {userProfile.ageGroup}
-                </div>
+                <div className="text-xs text-muted-foreground">{age}</div>
+                {userProfile.languagePreference && (
+                  <div className="text-xs text-muted-foreground">Lang: {userProfile.languagePreference}</div>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Navigation Items */}
+          {/* Nav Items */}
           <nav className="flex-1 p-4 space-y-2">
-            {navItems.map((item) => {
+            {navItems.map(item => {
               const Icon = item.icon;
               return (
                 <Button
@@ -178,7 +176,7 @@ const Navigation = ({ currentView, onViewChange, userProfile, onEmergency }: Nav
             })}
           </nav>
 
-          {/* Emergency Button */}
+          {/* Emergency */}
           <div className="p-4 border-t border-border/50">
             <Button
               variant="outline"
@@ -190,17 +188,13 @@ const Navigation = ({ currentView, onViewChange, userProfile, onEmergency }: Nav
             </Button>
           </div>
 
-          {/* Privacy Notice */}
-          <div className="p-4 border-t border-border/50">
-            <div className="text-xs text-muted-foreground leading-relaxed">
-              <div className="flex items-center space-x-1 mb-1">
-                <Shield className="w-3 h-3" />
-                <span className="font-medium">Your privacy matters</span>
-              </div>
-              <div>
-                Conversations are encrypted and secure. We only share information in emergencies for your safety.
-              </div>
+          {/* Privacy */}
+          <div className="p-4 border-t border-border/50 text-xs text-muted-foreground leading-relaxed">
+            <div className="flex items-center space-x-1 mb-1">
+              <Shield className="w-3 h-3" />
+              <span className="font-medium">Your privacy matters</span>
             </div>
+            Conversations are encrypted and secure. We only share information in emergencies for your safety.
           </div>
         </div>
       </div>

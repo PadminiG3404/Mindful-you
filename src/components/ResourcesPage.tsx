@@ -305,7 +305,34 @@ const ResourcesPage = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Important Reminders Section */}
+      <Card className="shadow-gentle border-secondary/20 p-6">
+        <h3 className="text-lg font-semibold text-foreground mb-4">
+          Important Reminders
+        </h3>
+        <div className="grid md:grid-cols-2 gap-6 text-sm text-muted-foreground">
+          <div>
+            <h4 className="font-medium text-foreground mb-2">Confidentiality</h4>
+            <p>All listed resources maintain strict confidentiality. Your conversations are private and protected.</p>
+          </div>
+          <div>
+            <h4 className="font-medium text-foreground mb-2">No Judgment</h4>
+            <p>These services are staffed by trained professionals who provide compassionate, non-judgmental support.</p>
+          </div>
+          <div>
+            <h4 className="font-medium text-foreground mb-2">Accessibility</h4>
+            <p>Many services offer multilingual support and are accessible to people with disabilities.</p>
+          </div>
+          <div>
+            <h4 className="font-medium text-foreground mb-2">Follow-up Care</h4>
+            <p>These resources can help connect you with ongoing mental health support and treatment options.</p>
+          </div>
+        </div>
+      </Card>
     </div>
+    
+  
   );
 };
 
